@@ -1,0 +1,74 @@
+body{
+    background-color: #f0e6f2;
+}
+
+header{
+    height: 5rem;
+    line-height: 5rem;
+    background-color: #a27eaf;
+    color: #fff;
+    text-align: center;
+}
+
+.world{
+    display: table;
+}
+
+.circleWrapper{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.circleWrapper li{
+    width: 3rem;
+    height: 3rem;
+    border-radius:50%;
+    display: inline-block;
+    margin: .5rem;
+    cursor: pointer;
+    position: relative;
+}
+
+.black{
+    background-color: #636161;
+}
+
+.white{
+    background-color: #fff;
+}
+
+.canvas{
+    position: absolute;
+    z-index: -1;
+}
+
+.canvasRowL{
+    top: 1.5rem;
+    left: -1rem;
+}
+
+.canvasRowR{
+    top: 1.5rem;
+    left: 3rem;
+}
+
+.canvasColumnUp{
+    top: -1.2rem;
+    left: .3rem;
+    -webkit-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.canvasColumnD{
+    top: 3rem;
+    left: .3rem;
+    -webkit-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.success,.failure{
+    color: #a27eaf;
+    font-size: 3rem;
+}

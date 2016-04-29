@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>TheSameWorld</title>
+        <link rel="stylesheet" href="./css/style.css" charset="utf-8">
+        <link rel="stylesheet" href="./css/reset.css" charset="utf-8">
+        <link rel="stylesheet" href="./css/iconfont.css" charset="utf-8">
+    </head>
+    <body ng-app="myapp">
+        <header>
+            <h1>The Same World</h1>
+        </header>
+
+        <section class="world" ng-controller="sameworld">
+            <button type="button" name="button" ng-click="reset()">重置</button>
+
+            <div class="circleWrapper" ngd-click="clickCircle($event, $index, line)" selector="li">
+                <ul ng-repeat="line in lines track by $index">
+                    <li class="circle" ng-repeat="circle in line track by $index" ng-class="{'black': circle === 0, 'white': circle === 1}" ng-dblclick="end()">
+                        <i class="iconfont icon-moon" ng-show="isOrigin(line, $index)" ng-class="{'icon-black': circle === 1, 'icon-white': circle === 0}"></i>
+                        <canvas class="canvas canvasRowL" width="20" height="20" ng-show="isShow"></canvas>
+                        <canvas class="canvas canvasRowR" width="20" height="20" ng-show="isShow"></canvas>
+                        <canvas class="canvas canvasColumnUp" width="20" height="20" ng-show="isShow"></canvas>
+                        <canvas class="canvas canvasColumnD" width="20" height="20" ng-show="isShow"></canvas>
+                    </li>
+                </ul>
+            </div>
+            <h1 class="success" ng-show="success">success!</h1>
+            <h1 class="failure" ng-show="failure">fail!</h1>
+        </section>
+
+        <script src="./lib/angular.min.js" charset="utf-8"></script>
+        <script src="./lib/angular-route.min.js" charset="utf-8"></script>
+        <script src="./lib/angular-delegates.js" charset="utf-8"></script>
+        <!-- <script src="./js/app.js" charset="utf-8"></script> -->
+        <script src="./js/controller/world.js" charset="utf-8"></script>
+    </body>
+</html>
