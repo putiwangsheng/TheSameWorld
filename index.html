@@ -13,13 +13,14 @@
         </header>
 
         <section class="world" ng-controller="sameworld">
-            <button type="button" name="button" ng-click="reset()">重置</button>
+            <div class="reset-button" ng-click="reset()"><i class="iconfont icon-reset01"></i></div>
+            <p class="warning" ng-show="suggestion">请从起点开始</p>
 
-            <div class="circleWrapper" ngd-click="clickCircle($event, $index, line)" selector="li">
+            <div class="circleWrapper" ngd-click="clickCircle($event, $parent.$index, $index, line)" selector="li">
                 <ul ng-repeat="line in lines track by $index">
                     <li class="circle" ng-repeat="circle in line track by $index" ng-class="{'black': circle === 0, 'white': circle === 1}" ng-dblclick="end()">
-                        <i class="iconfont icon-moon" ng-show="isOrigin(line, $index)" ng-class="{'icon-black': circle === 1, 'icon-white': circle === 0}"></i>
-                        <canvas class="canvas canvasRowL" width="20" height="20" ng-show="isShow"></canvas>
+                        <i class="iconfont icon-shuipingzuo" ng-show="isOrigin($parent.$index, $index)" ng-class="{'icon-black': circle === 1, 'icon-white': circle === 0}"></i>
+                        <canvas class="canvas canvasRowL" width="20" height="20" ng-show="isShow()"></canvas>
                         <canvas class="canvas canvasRowR" width="20" height="20" ng-show="isShow"></canvas>
                         <canvas class="canvas canvasColumnUp" width="20" height="20" ng-show="isShow"></canvas>
                         <canvas class="canvas canvasColumnD" width="20" height="20" ng-show="isShow"></canvas>

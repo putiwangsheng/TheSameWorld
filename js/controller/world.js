@@ -1,7 +1,7 @@
 angular.module('myapp', ['DelegateEvents'])
     .controller('sameworld', function($scope){
         $scope.reset = function (){
-            circlesArr = [
+            $scope.lines = [
                 [1],
                 [0, 1, 1, 1],
                 [1, 0, 0, 1],
@@ -9,6 +9,8 @@ angular.module('myapp', ['DelegateEvents'])
                 [undefined, undefined, undefined, 1]
             ];
             $scope.isShow = false;
+            $scope.success = false;
+            $scope.failure = false;
         };
 
         var circlesArr = $scope.lines = [
@@ -18,35 +20,47 @@ angular.module('myapp', ['DelegateEvents'])
             [1, 1, 1, 0],
             [undefined, undefined, undefined, 1]
         ];
+        var origins = {
+            firstOrigin: {
+                indexOut: 1,
+                indexIn: 0
+            },
+            secondOrigin: {
+                indexOut: 3,
+                indexIn: 3
+            }
+        };
+        var originFIndexOut = origins.firstOrigin.indexOut;
+        var originFIndexIn = origins.firstOrigin.indexIn;
+        var originSIndexOut = origins.secondOrigin.indexOut;
+        var originSIndexIn = origins.secondOrigin.indexIn;
 
         var clickArr = [];
         var dblClickCount = 0;
 
         // judge the circle is origin point or not
-        $scope.isOrigin = function(line, index){
-            var indexOut = circlesArr.indexOf(line);
-            if((indexOut === 1 && index === 0) || (indexOut === 3 && index === 3)){
+        $scope.isOrigin = function(indexOut, indexIn){
+            if((indexOut === originFIndexOut && indexIn === originFIndexIn) || (indexOut === originSIndexOut && indexIn === originSIndexIn)){
                 return true;
             }else{
                 return false;
             }
         };
 
-        $scope.clickCircle = function (e, index, line){
-            if(clickArr.length === 0 && $scope.isOrigin(line, index) === false){
-                console.log("请从起点开始");
+        $scope.clickCircle = function (e, indexOut, indexIn, line){
+            if(clickArr.length === 0 && $scope.isOrigin(indexOut, indexIn) === false){
+                $scope.suggestion = true;
                 return;
             }
-
+            $scope.suggestion = false;
             var indexCoord = {};
-            var indexOut = circlesArr.indexOf(line);
             indexCoord.indexOut = indexOut;
-            indexCoord.indexIn = index;
-            indexCoord.value = circlesArr[indexOut][index];
+            indexCoord.indexIn = indexIn;
+            indexCoord.value = circlesArr[indexOut][indexIn];
             clickArr.push(indexCoord);
 
             if(clickArr.length >= 2){
-                if($scope.isOrigin(line, index) === true){
+                if($scope.isOrigin(indexOut, indexIn) === true){
                     drawLine(e.target.parentNode, clickArr, line);
                 }else{
                     drawLine(e.target, clickArr, line);
@@ -56,6 +70,7 @@ angular.module('myapp', ['DelegateEvents'])
 
         //double click to end
         $scope.end = function(){
+            //change color
             clickArr.forEach(function(item){
                 if(item.value === 0){
                     circlesArr[item.indexOut][item.indexIn] = 1;
@@ -63,6 +78,10 @@ angular.module('myapp', ['DelegateEvents'])
                     circlesArr[item.indexOut][item.indexIn] = 0;
                 }
             });
+
+            //TODO
+            if(clickArr[0].indexOut === originFIndexOut && clickArr[0].indexIn === originFIndexIn || clickArr[0].indexOut === originSIndexOut && clickArr[0].indexIn === originSIndexIn){
+            }
 
             clickArr = [];
             $scope.isShow = false;
