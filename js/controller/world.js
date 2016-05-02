@@ -1,25 +1,9 @@
 angular.module('myapp', ['DelegateEvents'])
     .controller('sameworld', function($scope){
-        $scope.reset = function (){
-            $scope.lines = [
-                [1],
-                [0, 1, 1, 1],
-                [1, 0, 0, 1],
-                [1, 1, 1, 0],
-                [undefined, undefined, undefined, 1]
-            ];
-            $scope.isShow = false;
-            $scope.success = false;
-            $scope.failure = false;
-        };
+        var circlesArr,
+        originFIndexOut, originFIndexIn, originSIndexOut, originSIndexIn,
+        clickArr, dblClickCount;
 
-        var circlesArr = $scope.lines = [
-            [1],
-            [0, 1, 1, 1],
-            [1, 0, 0, 1],
-            [1, 1, 1, 0],
-            [undefined, undefined, undefined, 1]
-        ];
         var origins = {
             firstOrigin: {
                 indexOut: 1,
@@ -30,15 +14,34 @@ angular.module('myapp', ['DelegateEvents'])
                 indexIn: 3
             }
         };
-        var originFIndexOut = origins.firstOrigin.indexOut;
-        var originFIndexIn = origins.firstOrigin.indexIn;
-        var originSIndexOut = origins.secondOrigin.indexOut;
-        var originSIndexIn = origins.secondOrigin.indexIn;
 
-        var clickArr = [];
-        var dblClickCount = 0;
+        init();
 
-        // judge the circle is origin point or not
+        function init(){
+            circlesArr = $scope.lines = [
+                [1],
+                [0, 1, 1, 1],
+                [1, 0, 0, 1],
+                [1, 1, 1, 0],
+                [undefined, undefined, undefined, 1]
+            ];
+
+            originFIndexOut = origins.firstOrigin.indexOut;
+            originFIndexIn = origins.firstOrigin.indexIn;
+            originSIndexOut = origins.secondOrigin.indexOut;
+            originSIndexIn = origins.secondOrigin.indexIn;
+            clickArr = [];
+            dblClickCount = 0;
+
+            $scope.success = false;
+            $scope.failure = false;
+            $scope.suggestion = false;
+        }
+
+        $scope.reset = function (){
+            init();
+        };
+
         $scope.isOrigin = function(indexOut, indexIn){
             if((indexOut === originFIndexOut && indexIn === originFIndexIn) || (indexOut === originSIndexOut && indexIn === originSIndexIn)){
                 return true;
@@ -49,21 +52,51 @@ angular.module('myapp', ['DelegateEvents'])
 
         $scope.clickCircle = function (e, indexOut, indexIn, line){
             if(clickArr.length === 0 && $scope.isOrigin(indexOut, indexIn) === false){
+                clickArr = [];
                 $scope.suggestion = true;
                 return;
             }
+
             $scope.suggestion = false;
+
             var indexCoord = {};
             indexCoord.indexOut = indexOut;
             indexCoord.indexIn = indexIn;
             indexCoord.value = circlesArr[indexOut][indexIn];
             clickArr.push(indexCoord);
 
-            if(clickArr.length >= 2){
-                if($scope.isOrigin(indexOut, indexIn) === true){
-                    drawLine(e.target.parentNode, clickArr, line);
-                }else{
-                    drawLine(e.target, clickArr, line);
+            //when click the origin, e.target is <i></i>
+            if($scope.isOrigin(indexOut, indexIn) === true){
+                drawLine(e.target.parentNode, clickArr, line);
+            }else{
+                drawLine(e.target, clickArr, line);
+            }
+        };
+
+        $scope.isShow = function (indexOut, indexIn, direction){
+            var dir = '';
+
+            for (var i = 1, len = clickArr.length; i < len; i++) {
+                if(indexOut === clickArr[i].indexOut && indexIn === clickArr[i].indexIn){
+                    if(clickArr[i - 1].indexOut === clickArr[i].indexOut){
+                        if(clickArr[i - 1].indexIn > clickArr[i].indexIn){
+                            dir = 'right';
+                        }else if(clickArr[i - 1].indexIn < clickArr[i].indexIn){
+                            dir = 'left';
+                        }
+                    }
+
+                    else if(clickArr[i - 1].indexIn === clickArr[i].indexIn){
+                        if(clickArr[i - 1].indexOut > clickArr[i].indexOut){
+                            dir = 'down';
+                        }else if(clickArr[i - 1].indexOut < clickArr[i].indexOut){
+                            dir = 'up';
+                        }
+                    }
+
+                    if(direction === dir){
+                        return true;
+                    }
                 }
             }
         };
@@ -79,13 +112,16 @@ angular.module('myapp', ['DelegateEvents'])
                 }
             });
 
-            //TODO
-            if(clickArr[0].indexOut === originFIndexOut && clickArr[0].indexIn === originFIndexIn || clickArr[0].indexOut === originSIndexOut && clickArr[0].indexIn === originSIndexIn){
+            //hide origin
+            if(clickArr[0].indexOut === originFIndexOut && clickArr[0].indexIn === originFIndexIn){
+                originFIndexOut = originFIndexIn = -1;
+            }else if(clickArr[0].indexOut === originSIndexOut && clickArr[0].indexIn === originSIndexIn){
+                originSIndexOut = originSIndexIn = -1;
             }
 
             clickArr = [];
-            $scope.isShow = false;
 
+            //judge isSuccess
             dblClickCount++;
             if(dblClickCount === 2){
                 isSuccess();
@@ -115,26 +151,11 @@ angular.module('myapp', ['DelegateEvents'])
             }
         }
 
-        function drawLine(node, clickArr, line){
-            var preCircle = clickArr[clickArr.length - 2];
-            var curCircle = clickArr[clickArr.length - 1];
-
-            if(preCircle.indexOut === curCircle.indexOut){
-                if(curCircle.indexIn !== line.length - 1 && preCircle.indexIn > curCircle.indexIn){
-                    setCanvas('canvasRowR', 20, node);
-                }else if(curCircle.indexIn !== 0 && preCircle.indexIn < curCircle.indexIn){
-                    setCanvas('canvasRowL', 20, node);
-                }
-            }
-
-            if(preCircle.indexIn === curCircle.indexIn){
-                if(curCircle.indexOut !== circlesArr.length - 1 && preCircle.indexOut > curCircle.indexOut){
-                    setCanvas('canvasColumnD', 20, node);
-                }else if(curCircle.indexOut !== 0 && preCircle.indexOut < curCircle.indexOut){
-                    setCanvas('canvasColumnUp', 20, node);
-                }
-            }
-
+        function drawLine(node){
+            setCanvas('canvasRowR', 20, node);
+            setCanvas('canvasRowL', 20, node);
+            setCanvas('canvasColumnD', 20, node);
+            setCanvas('canvasColumnUp', 20, node);
         }
 
         function setCanvas(canvasClass, lineLen, node){
@@ -144,7 +165,6 @@ angular.module('myapp', ['DelegateEvents'])
             ctx.lineTo(lineLen, 0);
             ctx.strokeStyle = "purple";
             ctx.stroke();
-            $scope.isShow = true;
         }
 
     });
